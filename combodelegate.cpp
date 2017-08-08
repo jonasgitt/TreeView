@@ -18,7 +18,6 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
 
         editor->addItem("Run");
         editor->addItem("Run with SM");
-        editor->addItem("Kinetic Run");
         editor->addItem("Run Transmissions");
         editor->addItem("Set Temperature");
         editor->addItem("NIMA");
@@ -38,7 +37,7 @@ void ComboBoxDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
   cBox->setCurrentIndex(cBox->findText(value));
 
  connect(editor, SIGNAL(currentIndexChanged(QString)), SLOT(test(QString)));
- //emit closeEditor(editor);
+
 }
 
 
@@ -49,10 +48,9 @@ void ComboBoxDelegate::setModelData(QWidget *editor, TreeModel *model,
   QComboBox *cBox = static_cast<QComboBox*>(editor);
   QString value = cBox->currentText();
 
-  model->setData(index, value, Qt::EditRole);
+ // model->setData(index, value, Qt::EditRole);
 
-  emit commitData(editor);
-  emit closeEditor(editor); //this deletes the editor entirely
+
 }
 
 
@@ -65,7 +63,7 @@ const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
 
 void ComboBoxDelegate::test(QString Action){
    QString hae = Action;
-    qDebug() << Action;
+    qDebug() << "boxdebug" << Action;
     emit boxupdate(hae);
 }
 

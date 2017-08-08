@@ -62,17 +62,18 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
 public:
     MainWindow(QWidget *parent = 0);
-    void InsertRunPar();
+private:
+    void InsertParameters(QStringList parameters);
 
 public slots:
     void updateActions();
-    void updateComboSlot();
+    void updateComboSlot(QModelIndex topLeft);
     void showParams(int Actions);
 
 private slots:
-    void insertChild();
+    void insertChild(QString ChildTitle);
     bool insertColumn();
-    void insertRow();
+    void insertRow(QString Action);
     bool removeColumn();
     void removeRow();
 };

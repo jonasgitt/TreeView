@@ -105,7 +105,7 @@ private:
     TreeItem *rootItem;
 
 public slots:
-    void comboUpdateSlot(QString Action);
+    void comboUpdateSlot();
 };
 //! [2]
 

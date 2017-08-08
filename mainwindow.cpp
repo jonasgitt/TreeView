@@ -28,16 +28,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(insertColumnAction, &QAction::triggered, this, &MainWindow::insertColumn);
     connect(removeRowAction, &QAction::triggered, this, &MainWindow::removeRow);
     connect(removeColumnAction, &QAction::triggered, this, &MainWindow::removeColumn);
-    connect(insertChildAction, &QAction::triggered, this, &MainWindow::insertChild);
-    connect(insertRowAction, &QAction::triggered, this, &MainWindow::insertRow);
+    //connect(insertChildAction, &QAction::triggered, this, &MainWindow::insertChild);
+    insertChild("new child");
+   //connect(insertRowAction, &QAction::triggered, this, &MainWindow::insertRow);
 
     updateActions();
 
-    //view->setItemDelegateForColumn(0, new ComboBoxDelegate(view));
+    view->setItemDelegateForColumn(0, new ComboBoxDelegate(view));
 //bool connection = connect(view->itemDelegate(),SIGNAL(boxupdate(QString)), SLOT(updateComboSlot()));
 //qDebug() << connection;
 
 
+    bool connection = connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), SLOT(updateComboSlot(QModelIndex)));
+    qDebug() << "MainWindow Connection: " << connection;
 
 
       QVariant a = model->index(0, 0, QModelIndex()).data();
@@ -47,11 +50,51 @@ MainWindow::MainWindow(QWidget *parent)
           view->resizeColumnToContents(column);
 }
 
-void MainWindow::updateComboSlot(){
-qDebug() << "Mainwindow update combo slot";
+
+//MUST DELETE OTHER CHILDREN BEFORE ADDING NEW ONES!!
+void MainWindow::updateComboSlot(QModelIndex topLeft){
+
+    QStringList parameters;
+   //if we're not in a top level node, return straight away. or if we not in column 0
+   if (view->model()->parent(topLeft).isValid() || topLeft.column() != 0)
+       return;
+
+   QVariant newdata = view->model()->data(topLeft);
+   while (view->model()->hasChildren(topLeft)){
+       view->model()->removeRow(0, topLeft);
+   }
+
+
+    qDebug() << "Mainwindow update combo slot. New Data" << newdata.toString();
+
+    insertChild("Parameters:");
+
+    if (newdata == "Run" || newdata == "Run with SM") {
+        parameters << "Sample #" << "Angle 1" << "uAmps 1" << "Angle 2" << "uAmps 2" << "Angle 3" << "uAmps 3";
+        InsertParameters(parameters);
+    }
+    else if (newdata == "Run Transmissions"){
+        parameters << "Subtitle" << "Height Offset" << "s1vg" << "s2vg" << "s3vg" << "s4vg" << "uAmps";
+        InsertParameters(parameters);
+    }
+    else if (newdata == "NIMA"){
+        parameters << "Target Pressure" << "Target Area";
+        InsertParameters(parameters);
+    }
+    else if (newdata == "Contrast Change"){
+        parameters << "Conc A" << "Conc B" << "Conc C" << "Conc d" << "Flow[mL/min]" << "Volume[mL]";
+        InsertParameters(parameters);
+    }
+    else if (newdata == "Julabo"){
+        parameters << "Temperature" << "Run Control Min" << "Run Control Max";
+    }
+    else if (newdata == "EuroTherm"){
+        parameters << "T1" << "T2" << "T3" << "T4" << "T5" << "T6" << "T7" << "T8";
+    }
 }
 
-void MainWindow::insertChild()
+
+void MainWindow::insertChild(QString ChildTitle)
 {
     QModelIndex index = view->selectionModel()->currentIndex();
     QAbstractItemModel *model = view->model();
@@ -66,7 +109,7 @@ void MainWindow::insertChild()
 
     for (int column = 0; column < model->columnCount(index); ++column) {
         QModelIndex child = model->index(0, column, index);
-        model->setData(child, QVariant("CellContent"), Qt::EditRole);
+        model->setData(child, QVariant(ChildTitle), Qt::EditRole);
         if (!model->headerData(column, Qt::Horizontal).isValid())
             model->setHeaderData(column, Qt::Horizontal, QVariant("[No header]"), Qt::EditRole);
     }
@@ -93,7 +136,7 @@ bool MainWindow::insertColumn()
 
 
 //PROBLEM: this finds the index of what ever is selected (which depends on the user!!) ... is this even a problem?
-void MainWindow::insertRow()
+void MainWindow::insertRow(QString Action)
 {
     QModelIndex index = view->selectionModel()->currentIndex();
     QAbstractItemModel *model = view->model();
@@ -105,16 +148,8 @@ void MainWindow::insertRow()
 
     for (int column = 0; column < model->columnCount(index.parent()); ++column) {
         QModelIndex child = model->index(index.row()+1, column, index.parent());
-        model->setData(child, QVariant("CellContent"), Qt::EditRole);
+        model->setData(child, QVariant(Action), Qt::EditRole);
     }
-
-    QComboBox *combo = new QComboBox();
-    QStringList Options;
-    Options << "Run" << "Run with SM" << "Set Temperature" << "NIMA" << "Run Transmissions";
-    combo->addItems(Options);
-     view->setIndexWidget(index, combo);
-
-     connect(combo, SIGNAL(currentIndexChanged(int)), SLOT(showParams(int)));
 }
 
 void MainWindow::showParams(int Action){
@@ -129,9 +164,8 @@ void MainWindow::showParams(int Action){
         QVariant data = view->model()->index(0,0,QModelIndex()).data();
         qDebug() << "new data" << data.toString();
         //insert childern and set their data
-        insertChild();
-        insertRow();
-        insertRow();
+        insertChild("new");
+
    }
     case 1: //Run with SM
 break;
@@ -189,18 +223,13 @@ void MainWindow::updateActions()
     }
 }
 
-void MainWindow::InsertRunPar(){
-/*
-    insertChild("Sample Number");
-    QStringList parameters;
-    parameters << "Angle 1" << "uAmps 1" << "Angle 2" << "uAmps 2" << "Angle 3" << "uAmps 3";
+void MainWindow::InsertParameters(QStringList parameters){
 
     QString parameter;
 
     foreach (parameter, parameters){
         insertRow(parameter);
     }
-*/
 }
 
 

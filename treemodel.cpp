@@ -43,9 +43,9 @@ void TreeModel::runSelected(TreeItem *comboParent)
 
 
 //connect to signal something changed in combobox
-void TreeModel::comboUpdateSlot(QString Action){
+void TreeModel::comboUpdateSlot(){
 
-    qDebug() << "Comboox is at: " << Action;
+    qDebug() << "COMBOBOX SLOT IS FUNCTIONAL";
 /*
     switch(combobox->currentindex)
     case "Run": //run
@@ -78,8 +78,6 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     TreeItem *item = getItem(index);
-
-
     return item->data(index.column());
 
 }
