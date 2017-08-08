@@ -68,7 +68,6 @@ private:
 public slots:
     void updateActions();
     void updateComboSlot(QModelIndex topLeft);
-    void showParams(int Actions);
 
 private slots:
     void insertChild(QString ChildTitle);
@@ -76,6 +75,8 @@ private slots:
     void insertRow(QString Action);
     bool removeColumn();
     void removeRow();
+    void on_newCommand_clicked();
+    void on_RemoveCommand_clicked();
 };
 
 #endif // MAINWINDOW_H

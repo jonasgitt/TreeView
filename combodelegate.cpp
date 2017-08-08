@@ -15,13 +15,10 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
 
     QComboBox *editor = new QComboBox(parent);
 
+    QStringList options;
+    options << "Run" << "Run with SM" << "Run Transmissions" << "NIMA" << "Contrast Change" << "Julabo" << "Eurotherm";
 
-        editor->addItem("Run");
-        editor->addItem("Run with SM");
-        editor->addItem("Run Transmissions");
-        editor->addItem("Set Temperature");
-        editor->addItem("NIMA");
-        editor->addItem("Contrast Change");
+    editor->addItems(options);
 
     if (!index.parent().isValid())
       return editor;
