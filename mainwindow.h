@@ -64,6 +64,7 @@ public:
     MainWindow(QWidget *parent = 0);
 private:
     void InsertParameters(QStringList parameters);
+    QStringList parameterList(QVariant runOption);
 
 public slots:
     void updateActions();

@@ -29,9 +29,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(removeRowAction, &QAction::triggered, this, &MainWindow::removeRow);
     connect(removeColumnAction, &QAction::triggered, this, &MainWindow::removeColumn);
     //connect(insertChildAction, &QAction::triggered, this, &MainWindow::insertChild);
-    insertChild("Choose a Command...");
+   insertChild("Choose a Command...");
    //connect(insertRowAction, &QAction::triggered, this, &MainWindow::insertRow);
-
+//on_newCommand_clicked();
     updateActions();
 
     view->setItemDelegateForColumn(0, new ComboBoxDelegate(view));
@@ -46,43 +46,47 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::updateComboSlot(QModelIndex topLeft){
 
-    QStringList parameters;
-   //if we're not in a top level node, return straight away. or if we not in column 0
-   if (view->model()->parent(topLeft).isValid() || topLeft.column() != 0)
-       return;
+    QVariant newdata = view->model()->data(topLeft);
+    if (newdata == "Choose a Command...") return;
+
+    if (view->model()->parent(topLeft).isValid() && topLeft.column() == 1)
+         qDebug() << "Data Changed: " << view->model()->data(topLeft).toString();
 
 
-   QVariant newdata = view->model()->data(topLeft);
    while (view->model()->hasChildren(topLeft)){
        view->model()->removeRow(0, topLeft);
    }
 
-    if (newdata == "Run" || newdata == "Run with SM") {
-        parameters << "Sample #" << "Angle 1" << "uAmps 1" << "Angle 2" << "uAmps 2" << "Angle 3" << "uAmps 3";
-        InsertParameters(parameters);
-    }
-    else if (newdata == "Run Transmissions"){
-        parameters << "Subtitle" << "Height Offset" << "s1vg" << "s2vg" << "s3vg" << "s4vg" << "uAmps";
-        InsertParameters(parameters);
-    }
-    else if (newdata == "NIMA"){
-        parameters << "Target Pressure" << "Target Area";
-        InsertParameters(parameters);
-    }
-    else if (newdata == "Contrast Change"){
-        parameters << "Conc A" << "Conc B" << "Conc C" << "Conc d" << "Flow[mL/min]" << "Volume[mL]";
-        InsertParameters(parameters);
-    }
-    else if (newdata == "Julabo"){
-        parameters << "Temperature" << "Run Control Min" << "Run Control Max";
-        InsertParameters(parameters);
-    }
-    else if (newdata == "Eurotherm"){
-        parameters << "T1" << "T2" << "T3" << "T4" << "T5" << "T6" << "T7" << "T8";
-        InsertParameters(parameters);
-    }
+   if (!view->model()->parent(topLeft).isValid() && topLeft.column() == 0){
+       InsertParameters(parameterList(newdata));
+   }
+
 }
 
+QStringList MainWindow::parameterList(QVariant runOption){
+
+    QStringList parameters;
+
+    if (runOption == "Run" || runOption == "Run with SM") {
+        parameters << "Sample #" << "Angle 1" << "uAmps 1" << "Angle 2" << "uAmps 2" << "Angle 3" << "uAmps 3";
+    }
+    else if (runOption == "Run Transmissions"){
+        parameters << "Subtitle" << "Height Offset" << "s1vg" << "s2vg" << "s3vg" << "s4vg" << "uAmps";
+    }
+    else if (runOption == "NIMA"){
+        parameters << "Target Pressure" << "Target Area";
+    }
+    else if (runOption == "Contrast Change"){
+        parameters << "Conc A" << "Conc B" << "Conc C" << "Conc d" << "Flow[mL/min]" << "Volume[mL]";
+    }
+    else if (runOption == "Julabo"){
+        parameters << "Temperature" << "Run Control Min" << "Run Control Max";
+    }
+    else if (runOption == "Eurotherm"){
+        parameters << "T1" << "T2" << "T3" << "T4" << "T5" << "T6" << "T7" << "T8";
+    }
+    return parameters;
+}
 
 void MainWindow::insertChild(QString ChildTitle)
 {
@@ -97,12 +101,12 @@ void MainWindow::insertChild(QString ChildTitle)
     if (!model->insertRow(0, index))
         return;
 
-    for (int column = 0; column < model->columnCount(index); ++column) {
-        QModelIndex child = model->index(0, column, index);
+    //for (int column = 0; column < model->columnCount(index); ++column) {
+        QModelIndex child = model->index(0, 0, index);
         model->setData(child, QVariant(ChildTitle), Qt::EditRole);
-        if (!model->headerData(column, Qt::Horizontal).isValid())
-            model->setHeaderData(column, Qt::Horizontal, QVariant("[No header]"), Qt::EditRole);
-    }
+        //if (!model->headerData(column, Qt::Horizontal).isValid())
+          //  model->setHeaderData(column, Qt::Horizontal, QVariant("[No header]"), Qt::EditRole);
+   //}
 
     view->selectionModel()->setCurrentIndex(model->index(0, 0, index),
                                             QItemSelectionModel::ClearAndSelect);

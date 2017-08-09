@@ -177,13 +177,15 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 }
 
 //ensure data is stored in model correctly (after editing)
+//This results in any and all data written to the table to be stored in column...
+//...specified in setData()
 bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (role != Qt::EditRole)
         return false;
 
     TreeItem *item = getItem(index); //gets item a given index
-    bool result = item->setData(1, value);
+    bool result = item->setData(index.column(), value);
 
     if (result)
         emit dataChanged(index, index);
