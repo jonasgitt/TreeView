@@ -13,14 +13,6 @@ TreeModel::TreeModel(const QStringList &headers, const QString &data, QObject *p
         rootData << header;
 
     rootItem = new TreeItem(rootData);
-    /*rootItem->insertChildren(rootItem->childCount(), 1, rootItem->columnCount());
-           rootItem->child(0)->setData(0, "RUN");
-           runSelected(rootItem->child(0));
-
-    //google how to read out comboboxes from QItemDelegate
-    //connect(QComboBox, SIGNAL(closeEditor(QComboBox)), SLOT comboUpdateSlot(QComboBox));*/
-
-
 }
 
 
@@ -41,27 +33,11 @@ void TreeModel::runSelected(TreeItem *comboParent)
 
 }
 
-
-//connect to signal something changed in combobox
-void TreeModel::comboUpdateSlot(){
-
-    qDebug() << "COMBOBOX SLOT IS FUNCTIONAL";
-/*
-    switch(combobox->currentindex)
-    case "Run": //run
-          runSelected(/*combobox parent*/
-    // and so on...
-}
-
-
-// [1]
 TreeModel::~TreeModel()
 {
     delete rootItem;
 }
-//! [1]
 
-//! [2]
 int TreeModel::columnCount(const QModelIndex & /* parent */) const
 {
     return rootItem->columnCount();
@@ -90,9 +66,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 
     return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
-//! [3]
 
-//! [4]
 TreeItem *TreeModel::getItem(const QModelIndex &index) const
 {
     if (index.isValid()) {
@@ -208,8 +182,8 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
     if (role != Qt::EditRole)
         return false;
 
-    TreeItem *item = getItem(index);
-    bool result = item->setData(0, value);
+    TreeItem *item = getItem(index); //gets item a given index
+    bool result = item->setData(1, value);
 
     if (result)
         emit dataChanged(index, index);
@@ -232,55 +206,3 @@ bool TreeModel::setHeaderData(int section, Qt::Orientation orientation,
 }
 
 
-
-
-
-/*
-    while (number < lines.count()) {
-        int position = 0;
-        while (position < lines[number].length()) {
-            if (lines[number].at(position) != ' ')
-                break;
-            ++position;
-        }
-
-        QString lineData = lines[number].mid(position).trimmed();
-
-        if (!lineData.isEmpty()) {
-            // Read the column data from the rest of the line.
-
-            QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
-
-            QVector<QVariant> columnData;
-            for (int column = 0; column < columnStrings.count(); ++column)
-                columnData << columnStrings[column];
-
-            if (position > indentations.last()) {
-                // The last child of the current parent is now the new parent
-                // unless the current parent has no children.
-
-                if (parents.last()->childCount() > 0) {
-                    parents << parents.last()->child(parents.last()->childCount()-1);
-                    indentations << position;
-                }
-            } else {
-                while (position < indentations.last() && parents.count() > 0) {
-                    parents.pop_back();
-                    indentations.pop_back();
-                }
-            }
-
-            // Append a new item to the current parent's list of children.
-            TreeItem *parent = parents.last();
-
-
-            //KEY!!!!!
-            parent->insertChildren(parent->childCount(), 1, rootItem->columnCount());
-            for (int column = 0; column < columnData.size(); ++column)
-                parent->child(parent->childCount() - 1)->setData(column, columnData[column]);
-        }
-
-        ++number;
-   }
-
-*/

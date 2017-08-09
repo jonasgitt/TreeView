@@ -14,7 +14,7 @@
    <string>Editable Tree Model</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -56,6 +56,15 @@
      </item>
      <item>
       <widget class="QTreeView" name="view">
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+       <property name="defaultDropAction">
+        <enum>Qt::MoveAction</enum>
+       </property>
        <property name="alternatingRowColors">
         <bool>true</bool>
        </property>

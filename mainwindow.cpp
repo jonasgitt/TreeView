@@ -35,19 +35,12 @@ MainWindow::MainWindow(QWidget *parent)
     updateActions();
 
     view->setItemDelegateForColumn(0, new ComboBoxDelegate(view));
-//bool connection = connect(view->itemDelegate(),SIGNAL(boxupdate(QString)), SLOT(updateComboSlot()));
-//qDebug() << connection;
-
 
     bool connection = connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), SLOT(updateComboSlot(QModelIndex)));
     qDebug() << "MainWindow Connection: " << connection;
 
-
-      QVariant a = model->index(0, 0, QModelIndex()).data();
-      qDebug() << "stored at a: " << a.toString();
-
-      for (int column = 0; column < model->columnCount(); ++column)
-          view->resizeColumnToContents(column);
+    for (int column = 0; column < model->columnCount(); ++column)
+      view->resizeColumnToContents(column);
 }
 
 
@@ -153,7 +146,7 @@ void MainWindow::insertRow(QString Action)
 
     for (int column = 0; column < model->columnCount(index.parent()); ++column) {
         QModelIndex child = model->index(index.row()+1, column, index.parent());
-        model->setData(child, QVariant("Action"), Qt::EditRole);
+        model->setData(child, QVariant(Action), Qt::EditRole);
     }
 }
 
@@ -228,9 +221,13 @@ void MainWindow::on_RemoveCommand_clicked()
 {
     QModelIndex index = view->selectionModel()->currentIndex();
     QAbstractItemModel *model = view->model();
-    if (model->removeRow(index.row(), index.parent()))
-        updateActions();
+
+    if (!view->model()->parent(index).isValid()){
+        if (model->removeRow(index.row(), index.parent()))
+            updateActions();
+    }
 }
+
 void MainWindow::removeRow()
 {
     on_RemoveCommand_clicked();
