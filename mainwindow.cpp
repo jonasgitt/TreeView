@@ -49,8 +49,6 @@ void MainWindow::updateComboSlot(QModelIndex topLeft){
     QVariant newdata = view->model()->data(topLeft);
     if (newdata == "Choose a Command...") return;
 
-    if (view->model()->parent(topLeft).isValid() && topLeft.column() == 1)
-
    while (view->model()->hasChildren(topLeft)){
        view->model()->removeRow(0, topLeft);
    }
@@ -71,8 +69,11 @@ QStringList MainWindow::parameterList(QVariant runOption){
     else if (runOption == "Run Transmissions"){
         parameters << "Subtitle" << "uAmps" << "s4vg" << "s3vg" << "s2vg" << "s1vg" << "Height Offset";
     }
-    else if (runOption == "NIMA"){
-        parameters << "Target Pressure" << "Target Area";
+    else if (runOption == "NIMA Pressure"){
+        parameters << "Target Pressure";
+    }
+    else if (runOption == "NIMA Area"){
+        parameters << "Target Area";
     }
     else if (runOption == "Contrast Change"){
         parameters << "Conc A" << "Volume[mL]" << "Flow[mL/min]" << "Conc D" << "Conc C" << "Conc B";;
@@ -240,15 +241,7 @@ void MainWindow::removeRow()
     on_RemoveCommand_clicked();
 }
 
-//conect to dataChanged()
-//easiest way is probably just to parse everything if data is changed
-//data is stored permanently in the model
-//could have a button "Generate Script" so that it isnt parsing for every tiniest changed
-//this generate script button would reside in mainwindow
-//i must work in mainwindow because that is where the instance of the model resides?
-//i can call a function on that instance (the function is declared here <<-- do that
-//this is only used for scriptwriting, i can call the scriptLines functions straight from here
-// --> then return the scriptLines to MainWindow for printing?
+
 void MainWindow::parseModel(){
 
     QVector<QVariant> params;
@@ -279,8 +272,10 @@ void MainWindow::parseModel(){
             parseRun(params);
          else if (comboSelected == "Contrast Change")
             parseContrast(params);
-         else if (comboSelected == "NIMA")
-             parseNIMA(params);
+         else if (comboSelected == "NIMA Pressure")
+             parseNIMA_P(params);
+         else if (comboSelected == "NIMA Area")
+             parseNIMA_A(params);
          else if (comboSelected == "Eurotherm")
              parseEurotherm(params);
          else if (comboSelected == "Julabo")

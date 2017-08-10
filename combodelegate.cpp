@@ -16,7 +16,7 @@ QWidget *ComboBoxDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
     QComboBox *editor = new QComboBox(parent);
 
     QStringList options;
-    options << "Run" << "Run with SM" << "Run Transmissions" << "NIMA" << "Contrast Change" << "Julabo" << "Eurotherm";
+    options << "Run" << "Run with SM" << "Run Transmissions" << "NIMA Pressure" << "NIMA Area" << "Contrast Change" << "Julabo" << "Eurotherm";
 
     editor->addItems(options);
 

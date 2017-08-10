@@ -5,7 +5,6 @@ HEADERS     = mainwindow.h \
               treeitem.h \
               treemodel.h \
     combodelegate.h \
-    node.h \
     scriptgenerator.h
 RESOURCES   = editabletreemodel.qrc
 SOURCES     = mainwindow.cpp \
@@ -13,7 +12,6 @@ SOURCES     = mainwindow.cpp \
               treemodel.cpp \
               main.cpp \
     combodelegate.cpp \
-    node.cpp \
     scriptgenerator.cpp
 
 # install

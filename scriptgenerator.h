@@ -30,7 +30,8 @@ public:
 runstruct parseRun(QVector<QVariant>variables);
 runstruct parseContrast(QVector<QVariant>variables);
 runstruct parseTransm(QVector<QVariant>variables);
-runstruct parseNIMA(QVector<QVariant>variables);
+runstruct parseNIMA_A(QVector<QVariant>variables);
+runstruct parseNIMA_P(QVector<QVariant>variables);
 runstruct parseJulabo(QVector<QVariant>variables);
 runstruct parseEurotherm(QVector<QVariant>variables);
 

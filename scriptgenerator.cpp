@@ -25,9 +25,6 @@ runstruct parseRun(QVector<QVariant>variables){
     return runvars; //or call scriptlines directly?
 }
 
-
-
-
 runstruct parseContrast(QVector<QVariant>variables){
 
     runstruct runvars;
@@ -55,14 +52,24 @@ runstruct parseTransm(QVector<QVariant>variables){
     return runvars;
 }
 
-runstruct parseNIMA(QVector<QVariant>variables){
+runstruct parseNIMA_P(QVector<QVariant>variables){
 
     runstruct runvars;
 
-    //NEED TO DEAL WITH NIMA COMBO
+    runvars.pressure = variables[0].toDouble();
 
     return runvars;
 }
+
+runstruct parseNIMA_A(QVector<QVariant>variables){
+
+    runstruct runvars;
+
+    runvars.area = variables[0].toDouble();
+
+    return runvars;
+}
+
 
 runstruct parseJulabo(QVector<QVariant>variables){
 
