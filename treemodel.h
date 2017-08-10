@@ -5,6 +5,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
+#include <scriptgenerator.h>
 
 class TreeItem;
 
@@ -48,6 +49,7 @@ public:
                     const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int position, int rows,
                     const QModelIndex &parent = QModelIndex()) override;
+
 
 private:
     void runSelected(TreeItem *comboParent);

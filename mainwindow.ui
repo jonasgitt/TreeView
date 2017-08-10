@@ -52,6 +52,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="parseButton">
+         <property name="text">
+          <string>Parse Commands</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>

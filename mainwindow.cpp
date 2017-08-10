@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     file.close();
 
     view->setModel(model);
-
+    view->setAnimated(true);
 
     connect(exitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
     connect(view->selectionModel(), &QItemSelectionModel::selectionChanged,this, &MainWindow::updateActions);
@@ -50,8 +50,6 @@ void MainWindow::updateComboSlot(QModelIndex topLeft){
     if (newdata == "Choose a Command...") return;
 
     if (view->model()->parent(topLeft).isValid() && topLeft.column() == 1)
-         qDebug() << "Data Changed: " << view->model()->data(topLeft).toString();
-
 
    while (view->model()->hasChildren(topLeft)){
        view->model()->removeRow(0, topLeft);
@@ -68,22 +66,22 @@ QStringList MainWindow::parameterList(QVariant runOption){
     QStringList parameters;
 
     if (runOption == "Run" || runOption == "Run with SM") {
-        parameters << "Sample #" << "Angle 1" << "uAmps 1" << "Angle 2" << "uAmps 2" << "Angle 3" << "uAmps 3";
-    }
+        parameters << "Sample#" << "uAmps 3" << "Angle 3" << "uAmps 2" << "Angle 2" << "uAmps 1" << "Angle 1";
+     }
     else if (runOption == "Run Transmissions"){
-        parameters << "Subtitle" << "Height Offset" << "s1vg" << "s2vg" << "s3vg" << "s4vg" << "uAmps";
+        parameters << "Subtitle" << "uAmps" << "s4vg" << "s3vg" << "s2vg" << "s1vg" << "Height Offset";
     }
     else if (runOption == "NIMA"){
         parameters << "Target Pressure" << "Target Area";
     }
     else if (runOption == "Contrast Change"){
-        parameters << "Conc A" << "Conc B" << "Conc C" << "Conc d" << "Flow[mL/min]" << "Volume[mL]";
+        parameters << "Conc A" << "Volume[mL]" << "Flow[mL/min]" << "Conc D" << "Conc C" << "Conc B";;
     }
     else if (runOption == "Julabo"){
         parameters << "Temperature" << "Run Control Min" << "Run Control Max";
     }
     else if (runOption == "Eurotherm"){
-        parameters << "T1" << "T2" << "T3" << "T4" << "T5" << "T6" << "T7" << "T8";
+        parameters << "T1" << "T8" << "T7" << "T6" << "T5" << "T4" << "T3" << "T2";
     }
     return parameters;
 }
@@ -114,10 +112,14 @@ void MainWindow::insertChild(QString ChildTitle)
 }
 
 
-//ENABLE SO THAT INSERTION DEPENDS ON SELECTION
 void MainWindow::on_newCommand_clicked()
 {
    QAbstractItemModel *model = view->model();
+
+   if (!model->index(0,0).isValid()){ //if table is empty
+       insertChild("Choose a Command...");
+       return;
+   }
 
    int insertionRow;
   QModelIndex selectedIndex = view->selectionModel()->currentIndex();
@@ -223,9 +225,10 @@ bool MainWindow::insertColumn()
 
 void MainWindow::on_RemoveCommand_clicked()
 {
-    QModelIndex index = view->selectionModel()->currentIndex();
     QAbstractItemModel *model = view->model();
+    if (!model->index(0,0).isValid()) return;
 
+    QModelIndex index = view->selectionModel()->currentIndex();
     if (!view->model()->parent(index).isValid()){
         if (model->removeRow(index.row(), index.parent()))
             updateActions();
@@ -235,4 +238,62 @@ void MainWindow::on_RemoveCommand_clicked()
 void MainWindow::removeRow()
 {
     on_RemoveCommand_clicked();
+}
+
+//conect to dataChanged()
+//easiest way is probably just to parse everything if data is changed
+//data is stored permanently in the model
+//could have a button "Generate Script" so that it isnt parsing for every tiniest changed
+//this generate script button would reside in mainwindow
+//i must work in mainwindow because that is where the instance of the model resides?
+//i can call a function on that instance (the function is declared here <<-- do that
+//this is only used for scriptwriting, i can call the scriptLines functions straight from here
+// --> then return the scriptLines to MainWindow for printing?
+void MainWindow::parseModel(){
+
+    QVector<QVariant> params;
+    runstruct runvars;
+    QAbstractItemModel *model = view->model();
+
+    QModelIndex childIndex = model->index(0,0, QModelIndex());
+    QModelIndex grandChild = model->index(0,1, childIndex);
+    qDebug() << "Grandchild Data: " << model->data(grandChild).toString();
+    qDebug() << "RootItems Child Count: " << model->rowCount(QModelIndex());
+
+    for (int row = 0; row < model->rowCount(QModelIndex()); row++){
+
+         QModelIndex comboIndex = model->index(row,0, QModelIndex());
+         QString comboSelected = model->data(comboIndex).toString();
+         qDebug() << "Combo Selected: " << comboSelected;
+
+         for (int par = 0; par < model->rowCount(comboIndex); par++){
+
+             QModelIndex parIndex = model->index(par, 1, comboIndex);// 0 for testing
+             QString parameter = model->data(parIndex, Qt::EditRole).toString();
+             qDebug() << "Data: " << parameter;
+
+             params.append(model->data(parIndex, Qt::EditRole));
+         }
+
+         if (comboSelected == "Run")
+            parseRun(params);
+         else if (comboSelected == "Contrast Change")
+            parseContrast(params);
+         else if (comboSelected == "NIMA")
+             parseNIMA(params);
+         else if (comboSelected == "Eurotherm")
+             parseEurotherm(params);
+         else if (comboSelected == "Julabo")
+             parseJulabo(params);
+         else if (comboSelected == "Run Transmissions")
+             parseTransm(params);
+    }
+}
+
+
+//on collapse and DnD, parse all, print all
+
+void MainWindow::on_parseButton_clicked()
+{
+    parseModel();
 }

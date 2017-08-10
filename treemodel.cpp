@@ -1,10 +1,8 @@
-
 #include <QtWidgets>
-
 #include "treeitem.h"
 #include "treemodel.h"
+#include "scriptgenerator.h"
 
-//! [0]
 TreeModel::TreeModel(const QStringList &headers, const QString &data, QObject *parent)
     : QAbstractItemModel(parent)
 {
@@ -42,7 +40,7 @@ int TreeModel::columnCount(const QModelIndex & /* parent */) const
 {
     return rootItem->columnCount();
 }
-//! [2]
+
 
 //this gets the data out of the table (e.g. item->data(0) gave me which option was selected in combobox)
 QVariant TreeModel::data(const QModelIndex &index, int role) const
@@ -76,7 +74,7 @@ TreeItem *TreeModel::getItem(const QModelIndex &index) const
     }
     return rootItem;
 }
-//! [4]
+
 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
@@ -101,7 +99,7 @@ QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent) con
     else
         return QModelIndex();
 }
-//! [6]
+
 
 bool TreeModel::insertColumns(int position, int columns, const QModelIndex &parent)
 {
@@ -140,7 +138,6 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const
 
     return createIndex(parentItem->childNumber(), 0, parentItem);
 }
-//! [7]
 
 bool TreeModel::removeColumns(int position, int columns, const QModelIndex &parent)
 {
@@ -168,7 +165,7 @@ bool TreeModel::removeRows(int position, int rows, const QModelIndex &parent)
     return success;
 }
 
-//! [8]
+
 int TreeModel::rowCount(const QModelIndex &parent) const
 {
     TreeItem *parentItem = getItem(parent);
@@ -206,5 +203,4 @@ bool TreeModel::setHeaderData(int section, Qt::Orientation orientation,
 
     return result;
 }
-
 

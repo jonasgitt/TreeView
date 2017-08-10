@@ -65,6 +65,7 @@ public:
 private:
     void InsertParameters(QStringList parameters);
     QStringList parameterList(QVariant runOption);
+    void parseModel();
 
 public slots:
     void updateActions();
@@ -78,6 +79,7 @@ private slots:
     void removeRow();
     void on_newCommand_clicked();
     void on_RemoveCommand_clicked();
+    void on_parseButton_clicked();
 };
 
 #endif // MAINWINDOW_H
